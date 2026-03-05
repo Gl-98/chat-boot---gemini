@@ -1,0 +1,6 @@
+flask
+pypdf
+numpy
+python-dotenv
+google-genai
+google-generativeai

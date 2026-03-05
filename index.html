@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot fecomercio es - Gemini</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-gray-950 text-white">
+  <div class="max-w-4xl mx-auto h-screen flex flex-col">
+    <!-- Header -->
+    <div class="bg-gray-900 p-4 flex items-center gap-3">
+      <i class="fas fa-robot text-3xl text-emerald-400"></i>
+      <div>
+        <h1 class="text-2xl font-bold">Chatbot fecomercio es</h1>
+        <p class="text-emerald-400 text-sm">Múltiplas linguagens + Gemini lê PDFs • Entrega resultados inteligentes</p>
+      </div>
+    </div>
+
+    <!-- Chat -->
+    <div id="chat" class="flex-1 p-6 overflow-y-auto space-y-6 bg-gray-950"></div>
+
+    <!-- Input -->
+    <div class="p-6 bg-gray-900 border-t border-gray-800">
+      <div class="flex gap-3">
+        <input id="input" type="text" placeholder="Faça sua pergunta sobre os PDFs..." 
+               class="flex-1 bg-gray-800 text-white rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+        <button onclick="enviar()" 
+                class="bg-emerald-500 hover:bg-emerald-600 px-8 rounded-2xl font-medium flex items-center gap-2">
+          <i class="fas fa-paper-plane"></i> Enviar
+        </button>
+      </div>
+      <p class="text-xs text-gray-500 text-center mt-3">Digite e pressione Enter</p>
+    </div>
+  </div>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('input');
+
+    function adicionarMensagem(texto, tipo) {
+      const div = document.createElement('div');
+      div.className = tipo === 'user' 
+        ? 'flex justify-end' 
+        : 'flex justify-start';
+      div.innerHTML = `
+        <div class="${tipo === 'user' ? 'bg-emerald-600' : 'bg-gray-800'} max-w-[80%] rounded-3xl px-6 py-4">
+          ${texto}
+          ${tipo === 'bot' ? '<p class="text-[10px] text-gray-500 mt-2">usando Gemini 3 Flash</p>' : ''}
+        </div>
+      `;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function enviar() {
+      const pergunta = input.value.trim();
+      if (!pergunta) return;
+
+      adicionarMensagem(pergunta, 'user');
+      input.value = '';
+
+      const res = await fetch('/ask', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({pergunta})
+      });
+      
+      const data = await res.json();
+      const resposta = `${data.resposta}<br><br><span class="text-emerald-400 text-xs">📄 PDF usado: ${data.pdf_usado}</span>`;
+      adicionarMensagem(resposta, 'bot');
+    }
+
+    // Enter para enviar
+    input.addEventListener('keypress', e => { if (e.key === 'Enter') enviar(); });
+  </script>
+</body>
+</html>

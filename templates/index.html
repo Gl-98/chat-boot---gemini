@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot PDF</title>
+</head>
+<body>
+    <h1>Chatbot para PDFs</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label for="pdf">Selecione um PDF:</label>
+        <input type="file" name="pdf" accept=".pdf" required><br><br>
+        <label for="question">Pergunta:</label>
+        <input type="text" name="question" required><br><br>
+        <button type="submit">Enviar</button>
+    </form>
+    {% if answer %}
+    <h2>Resposta:</h2>
+    <p>{{ answer }}</p>
+    {% endif %}
+</body>
+</html>
